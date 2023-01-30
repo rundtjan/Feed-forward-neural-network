@@ -23,7 +23,7 @@ from paths import data_dir
 
 N_CLASSES = len(LABEL_INDICES)
 N_EPOCHS = 200  
-LEARNING_RATE = 0.03
+LEARNING_RATE = 0.06
 BATCH_SIZE = 100
 REPORT_EVERY = 1
 IS_VERBOSE = False
@@ -55,37 +55,11 @@ def label_to_idx(label):
 
 #--- model ---
 
-class FFNN1(nn.Module):
+class FFNN(nn.Module):
     # Feel free to add whichever arguments you like here.
     def __init__(self, vocab_size, n_classes, extra_arg_1=None, extra_arg_2=None):
-        super(FFNN1, self).__init__()
-        # WRITE CODE HERE
-        self.fc1 = nn.Linear(vocab_size, 13000)
-        self.fc2 = nn.Linear(13000, 8000)
-        self.fc3 = nn.Linear(8000, 3000)
-        self.fc4 = nn.Linear(3000, 1000)
-        self.fc5 = nn.Linear(1000, 500)
-        self.fc6 = nn.Linear(500, 60)
-        self.fc7 = nn.Linear(60, n_classes)
-
-    def forward(self, x, softmax):
-        # WRITE CODE HERE
-        x = torch.sigmoid(self.fc1(x))
-        x = torch.sigmoid(self.fc2(x))
-        x = torch.sigmoid(self.fc3(x))
-        x = torch.sigmoid(self.fc4(x))
-        x = torch.sigmoid(self.fc5(x))
-        x = torch.sigmoid(self.fc6(x))
-        x = torch.sigmoid(self.fc7(x))
-        if softmax:
-          x = F.log_softmax(x, dim=1)
-        return x
-
-class FFNN2(nn.Module):
-    # Feel free to add whichever arguments you like here.
-    def __init__(self, vocab_size, n_classes, extra_arg_1=None, extra_arg_2=None):
-        super(FFNN2, self).__init__()
-        # WRITE CODE HERE
+        super(FFNN, self).__init__()
+        # WRITE CODE HER
         self.fc1 = nn.Linear(vocab_size, 60)
         self.fc2 = nn.Linear(60, n_classes)
         
@@ -98,19 +72,19 @@ class FFNN2(nn.Module):
         return x
 
 
-class FFNN3(nn.Module):
+#class FFNN_flat(nn.Module):
     # Feel free to add whichever arguments you like here.
-    def __init__(self, vocab_size, n_classes, extra_arg_1=None, extra_arg_2=None):
-        super(FFNN3, self).__init__()
+#    def __init__(self, vocab_size, n_classes, extra_arg_1=None, extra_arg_2=None):
+#        super(FFNN3, self).__init__()
         # WRITE CODE HERE
-        self.fc1 = nn.Linear(vocab_size, n_classes)
+#        self.fc1 = nn.Linear(vocab_size, n_classes)
         
-    def forward(self, x, softmax):
+#    def forward(self, x, softmax):
         # WRITE CODE HERE
-        x = torch.sigmoid(self.fc1(x))
-        if softmax:
-          x = F.log_softmax(x, dim=1)
-        return x
+#        x = torch.sigmoid(self.fc1(x))
+#        if softmax:
+#          x = F.log_softmax(x, dim=1)
+#        return x
 
 #--- data loading ---
 data = read_semeval_datasets(data_dir)
@@ -120,7 +94,7 @@ indices, vocab_size = generate_bow_representations(data)
 #--- set up ---
 
 # WRITE CODE HERE
-model = FFNN2(vocab_size, N_CLASSES) #add extra arguments here if you use
+model = FFNN(vocab_size, N_CLASSES) #add extra arguments here if you use
 print(model)
 loss_function = nn.NLLLoss()
 loss_function2 = nn.CrossEntropyLoss()
@@ -148,8 +122,6 @@ for epoch in range(N_EPOCHS):
         optimizer.zero_grad()
         result = model.forward(mb, True)
         loss = loss_function(result, target)
-        #print(result)
-        #print(loss)
         loss.backward()
         optimizer.step()
         total_loss += loss.item()
@@ -164,15 +136,11 @@ correct = 0
 with torch.no_grad():
     for tweet in data['test.gold']:
         gold_class = label_to_idx(tweet['SENTIMENT'])
-        #print(tweet['SENTIMENT'])
-        #print(gold_class)
         # WRITE CODE HERE
         # You can, but for the sake of this homework do not have to,
         # use batching for the test data.
         result = model(tweet['BOW'], True)
-        #print(result)
         predicted = torch.argmax(result).item()
-        #print(predicted)
         if gold_class == predicted:
           correct = correct+1
         if IS_VERBOSE:
