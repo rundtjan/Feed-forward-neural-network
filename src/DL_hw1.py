@@ -22,8 +22,8 @@ from paths import data_dir
 #--- hyperparameters ---
 
 N_CLASSES = len(LABEL_INDICES)
-N_EPOCHS = 200
-LEARNING_RATE = 0.01
+N_EPOCHS = 200  
+LEARNING_RATE = 0.03
 BATCH_SIZE = 100
 REPORT_EVERY = 1
 IS_VERBOSE = False
@@ -86,8 +86,8 @@ class FFNN2(nn.Module):
     def __init__(self, vocab_size, n_classes, extra_arg_1=None, extra_arg_2=None):
         super(FFNN2, self).__init__()
         # WRITE CODE HERE
-        self.fc1 = nn.Linear(vocab_size, 10000)
-        self.fc2 = nn.Linear(10000, n_classes)
+        self.fc1 = nn.Linear(vocab_size, 60)
+        self.fc2 = nn.Linear(60, n_classes)
         
     def forward(self, x, softmax):
         # WRITE CODE HERE
@@ -120,7 +120,7 @@ indices, vocab_size = generate_bow_representations(data)
 #--- set up ---
 
 # WRITE CODE HERE
-model = FFNN3(vocab_size, N_CLASSES) #add extra arguments here if you use
+model = FFNN2(vocab_size, N_CLASSES) #add extra arguments here if you use
 print(model)
 loss_function = nn.NLLLoss()
 loss_function2 = nn.CrossEntropyLoss()
@@ -164,15 +164,15 @@ correct = 0
 with torch.no_grad():
     for tweet in data['test.gold']:
         gold_class = label_to_idx(tweet['SENTIMENT'])
-        print(tweet['SENTIMENT'])
-        print(gold_class)
+        #print(tweet['SENTIMENT'])
+        #print(gold_class)
         # WRITE CODE HERE
         # You can, but for the sake of this homework do not have to,
         # use batching for the test data.
         result = model(tweet['BOW'], True)
         #print(result)
         predicted = torch.argmax(result).item()
-        print(predicted)
+        #print(predicted)
         if gold_class == predicted:
           correct = correct+1
         if IS_VERBOSE:
