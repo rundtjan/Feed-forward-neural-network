@@ -95,7 +95,7 @@ indices, vocab_size = generate_bow_representations(data)
 
 # WRITE CODE HERE
 model = FFNN(vocab_size, N_CLASSES) #add extra arguments here if you use
-print(model)
+#print(model)
 loss_function = nn.NLLLoss()
 loss_function2 = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=0.9)
